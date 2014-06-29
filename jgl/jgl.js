@@ -7,17 +7,6 @@ var Jgl = function(){
 
 Jgl.prototype.className = "jglGameLibrary";
 
-window.requestAnimFrame = (function(){
-    return  window.requestAnimationFrame       ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        window.oRequestAnimationFrame      ||
-        window.msRequestAnimationFrame     ||
-        function(callback, element){
-            window.setTimeout(callback, 1000 / 10);
-        };
-})();
-
 Jgl.prototype.error = {
     NOT_INITIALIZED: "not_initialized_error",
     PARAMETER: "parameter_error",
@@ -27,6 +16,17 @@ Jgl.prototype.error = {
 
 // Utility function to create basic, empty DOM elements on demand
 // *****************************************************
+window.requestAnimFrame = (function(callback){
+    return  window.requestAnimationFrame       ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame    ||
+        window.oRequestAnimationFrame      ||
+        window.msRequestAnimationFrame     ||
+        function(callback){
+            window.setTimeout(callback, 1000 / 10);
+        };
+})();
+
 Jgl.prototype.createElement = function(params) {
     if (!params){
         console.log("JGL: No parameters!");
@@ -77,8 +77,16 @@ Jgl.prototype.random = function(max){
 }
 
 //*****************************************************
-Jgl.prototype.newImage = function(src){
+Jgl.prototype.randomRange = function(min, max){
+    var range = max - min + 1;
+    return (Math.floor(Math.random() * range) + min);
+}
+//*****************************************************
+Jgl.prototype.newImage = function(src, callback){
     var image = new Image();
+    if (callback){
+        image.onload = function() { callback(image);};
+    }
     image.src = src;
     return image;
 }

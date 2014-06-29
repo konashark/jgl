@@ -72,5 +72,5 @@ updateScreen = function() {
     g.context.fillRect(0, 0, g.SCREEN_WIDTH, g.SCREEN_HEIGHT);
     spriteList.drawSprites(g.context);
 
-    window.requestAnimationFrame(updateScreen);
+    window.requestAnimFrame(updateScreen);
 }

@@ -89,7 +89,6 @@ Jgl_TileMapCanvas.prototype.drawMap = function(xoff, yoff) {
 		{
 			for (c = 0; c < ctx.tileMap.bufTilesWide; c++)
 			{
-//				var t = ctx.mapData.tiles[ctx.mapData.mapData[cornerstoneTileY + r][cornerstoneTileX + c]];
                 var row = cornerstoneTileY + r;
                 var col = cornerstoneTileX + c;
                 if (row >= 0 && row < ctx.mapData.numRows && col >= 0 && col < ctx.mapData.numColumns){
@@ -120,7 +119,7 @@ Jgl_TileMapCanvas.prototype.drawMap = function(xoff, yoff) {
 	// Find the cornerstone (the tile in the top left corner) of the requested map view
 	var cornerstoneTileX = (~~(xoff / this.mapData.tileWidth));  cornerstoneTileX -= (xoff < 0) ? 1 : 0;
 	var cornerstoneTileY = (~~(yoff / this.mapData.tileHeight)); cornerstoneTileY -= (yoff < 0) ? 1 : 0;
-	if ((cornerstoneTileX != this.tileMap.cornerstoneTileX) || (cornerstoneTileY != this.tileMap.cornerstoneTileY)){
+	if ((cornerstoneTileX !== this.tileMap.cornerstoneTileX) || (cornerstoneTileY !== this.tileMap.cornerstoneTileY)){
 		refreshBuffer(this, cornerstoneTileX, cornerstoneTileY);
 	}
 
