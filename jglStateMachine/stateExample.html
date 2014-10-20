@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JGL State Machine Example</title>
+    <style>
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            color: #fff;
+            font-size: 36pt;
+            text-align: center;
+        }
+
+        .show {
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+    <div class='screen' id='stateA' style="display:none;background-color: #a00;">This is STATE A</div>
+    <div class='screen' id='stateB' style="display:none;background-color: #0a0;">This is STATE B</div>
+    <div class='screen' id='stateC' style="display:none;background-color: #00a;">This is STATE C</div>
+
+    <script src="../jgl/jgl.js"></script>
+    <script src="../jgl/jgl_utils.js"></script>
+    <script src="../jgl/jgl_sprite.js"></script>
+    <script src="../jgl/jgl_state.js"></script>
+
+    <script src="stateExample.js"></script>
+</body>
+</html>

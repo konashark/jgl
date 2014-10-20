@@ -1,5 +1,6 @@
 //***********************************************
 Jgl_SpriteList = function(jgl){
+    this.signature = "spritelist";
     this.jgl = jgl;
     this.sprites = [];
 };
@@ -13,7 +14,11 @@ Jgl_SpriteList.prototype.newSprite = function(params) {
 
     var sprite = new Jgl_Sprite(this.jgl, params);
 
-    this.sprites.push(sprite);
+    if (params.parent && params.parent.signature === "sprite") {
+        params.parent.children.push(sprite);
+    } else {
+        this.sprites.push(sprite);
+    }
 
     return sprite;
 };
@@ -21,12 +26,17 @@ Jgl_SpriteList.prototype.newSprite = function(params) {
 //***********************************************
 Jgl_SpriteList.prototype.deleteSprite = function(sprite) {
     if (sprite){
-        var index = this.sprite.indexOf(sprite);
+        var index = this.sprites.indexOf(sprite);
         if (index >= 0) {
-            this.sprite.splice(index, 1);
+            this.sprites.splice(index, 1);
         }
         delete sprite;
     }
+};
+
+//***********************************************
+Jgl_SpriteList.prototype.deleteAll = function() {
+    this.sprites = [];
 };
 
 //***********************************************
@@ -35,11 +45,18 @@ Jgl_SpriteList.prototype.drawSprites = function(ctx) {
         return this.jgl.error.INVALID_CONTEXT;
     }
 
-    this.sprites.forEach(function(sprite) {
-        if (sprite.active){
-            sprite.draw(ctx);
-        }
-    });
+    renderArray(this.sprites);
+
+    function renderArray(spriteArray) {
+        spriteArray.forEach(function(sprite) {
+            if (sprite.active) {
+                sprite.draw(ctx);
+                if (sprite.children.length) {
+                    renderArray(sprite.children);
+                }
+            }
+        });
+    }
 }
 
 //***********************************************
@@ -59,7 +76,7 @@ Jgl_SpriteList.prototype.collision = function(sprite1, sprite2, fuzziness, circu
     if (circular){
         var xd = sprite1.x - sprite2.x;
         var yd = sprite1.y - sprite2.y;
-        var rad = ((sprite1.width + sprite1.height) / 4) + ((sprite2.width + sprite2.height) / 4);
+        var rad = ((sprite1.width + sprite1.height) / 4) + ((sprite2.width + sprite2.height) / 4) - fuzziness;
         return (xd * xd + yd * yd < rad * rad);
     } else {
         // do rectangular collision
@@ -117,11 +134,19 @@ Jgl_Sprite = function(jgl, params){
         }
     }
 
+    this.signature = "sprite";
     this.user = {}; // opaque place to store user data
+    this.x = 0;
+    this.y = 0;
+    this.children = []; // can attach sprites as children of other sprites in order to keep them grouped
+    this.parent = null;
+    this.relativePositioning = false;
     this.offsetX = this.offsetY = 0;
     this.srcX = this.srcY = 0;
-    this.srcWidth   = this.destWidth = params.width;
-    this.srcHeight  = this.destHeight = params.height;
+    this.srcWidth = this.destWidth = params.width;
+    this.srcHeight = this.destHeight = params.height;
+    this.rotation = 0;
+    this.radians = 0;
     this.animFrames = [];
     this.animate = false;
     this.autoLoop = false;
@@ -179,18 +204,34 @@ Jgl_Sprite.prototype.draw = function(ctx, x, y) {
             this.y = y;
         }
 
-        if (this.active){
+        // A child sprite can optionally be positioned relative to its parent
+        var relativeX = relativeY = 0;
+        if (this.relativePositioning && this.parent) {
+            relativeX = this.parent.x;
+            relativeY = this.parent.y;
+        }
+
+        if (this.active && this.canvas) {
+            if (this.rotation) {
+                context.save();
+                context.rotate(this.radians);
+            }
+
             ctx.drawImage(
                 this.canvas,
                 this.srcX,
                 this.srcY,
                 this.srcWidth,
                 this.srcHeight,
-                this.x - this.offsetX,
-                this.y - this.offsetY,
+                this.x - this.offsetX + relativeX,
+                this.y - this.offsetY + relativeY,
                 this.destWidth,
                 this.destHeight
             );
+
+            if (this.rotation) {
+                context.restore();
+            }
 
             if (this.animate) {
                 if (++this.currentFrame > this.endFrame) {
@@ -232,6 +273,13 @@ Jgl_Sprite.prototype.hide = function() {
 Jgl_Sprite.prototype.setSize = function(width, height) {
     this.destWidth = width;
     this.destHeight = height;
+}
+
+//***********************************************
+Jgl_Sprite.prototype.setRotation = function(rotation) {
+    this.rotation = rotation;
+    this.radians = rotation*Math.PI/180;
+
 }
 
 //***********************************************

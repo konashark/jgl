@@ -47,8 +47,8 @@ initSprites = function() {
         var s = spriteList.newSprite({id: 'ball'+i, width: 32, height: 32, imageUrl: './redball32x32.png'});
         s.setPosition(jgl.random(g.SCREEN_WIDTH - 40) + 20, jgl.random(g.SCREEN_HEIGHT - 60) + 30);
         s.setHotSpot(16, 16);
-        s.user.dx = jgl.random(17) - 8;
-        s.user.dy = jgl.random(17) - 8;
+        s.user.dx = jgl.random(8) - 4;
+        s.user.dy = jgl.random(8) - 4;
         if (s.user.dy === 0 ) { s.user.dy = 1; }
     }
 

@@ -1,5 +1,6 @@
 var Jgl_TileMapCanvas = function(jgl, params){
     this.jgl = jgl;
+    this.signature = "tilemapcanvas";
     this.tileMap = {
         ready: false,
         context: null,

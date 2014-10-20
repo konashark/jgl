@@ -7,6 +7,13 @@ var Jgl_Window = function(jgl, params) {
     //      yPos
     //      width
     //      height
+    //      canvas
+    //      viewport
+    //      border
+    //      frame
+    //      zOrder
+    //      backgroundColor
+    //      backgroundImage
 
     var jgl = jgl;  // save parent context
     params.type = 'div';
@@ -33,6 +40,11 @@ Jgl_Window.prototype.resize = function(){
 
 //*****************************************************
 Jgl_Window.prototype.getElement = function(){
+    return this.elem;
+};
+
+//*****************************************************
+Jgl_Window.prototype.getCanvas = function(){
     return this.elem;
 };
 

@@ -4,7 +4,6 @@ var jgl = null;
 var spriteList = null;
 
 var g = {
-    NUM_SPRITES: 125,
     SCREEN_WIDTH: 960,
     SCREEN_HEIGHT: 540,
     KEY_STATE: [],

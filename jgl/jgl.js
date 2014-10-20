@@ -1,17 +1,39 @@
 //*****************************************************
+//  The master JGL class
+//*****************************************************
 var Jgl = function(){
-    this.winList = [];
-    this.mapList = [];
+    console.log("JGL INIT");
+    this.winList    = [];
+    this.mapList    = [];
     this.spriteList = [];
+    this.stateList  = [];
+
+    this.KEYS = {
+        LEFT:       37,
+        RIGHT:      39,
+        UP:         38,
+        DOWN:       40,
+        ENTER:      13,
+        BACK:       27,
+        SPACE:      32,
+        ESC:        27
+    };
 };
 
 Jgl.prototype.className = "jglGameLibrary";
 
 Jgl.prototype.error = {
-    NOT_INITIALIZED: "not_initialized_error",
-    PARAMETER: "parameter_error",
-    INVALID_ID: "invalid_id",
-    INVALID_CONTEXT: "invalid_context"
+    NOT_INITIALIZED:    "not_initialized_error",
+    PARAMETER:          "parameter_error",
+    INVALID_ID:         "invalid_id",
+    INVALID_CONTEXT:    "invalid_context",
+    ALREADY_ACTIVE:     "already_active"
+};
+
+Jgl.prototype.event = {
+    JGL_INITIALIZED:    "jgl_initialized",
+    STATE_ACTIVATE:     "state_activate",
+    STATE_TERMINATE:    "state_terminate"
 };
 
 // Utility function to create basic, empty DOM elements on demand
@@ -27,91 +49,14 @@ window.requestAnimFrame = (function(callback){
         };
 })();
 
-Jgl.prototype.createElement = function(params) {
-    if (!params){
-        console.log("JGL: No parameters!");
-    }
-    if (!params.type) {
-        params.type = 'div';
-    }
-    var elem = document.createElement(params.type);
-    if (!params.position) {
-        elem.style.position = 'absolute';
-    } else {
-        elem.style.position = params.position;
-    }
-    if (params.class){
-        elem.className = params.class;
-    }
-    if (params.id){
-        elem.id = params.id;
-    }
-    if (params.src){
-        elem.setAttribute("src", params.src);
-    }
-    if (params.top){
-        elem.style.top = params.top;
-    }
-    if (params.left){
-        elem.style.left = params.left;
-    }
-    if (params.width){
-        elem.style.width = params.width;
-    }
-    if (params.height){
-        elem.style.height = params.height;
-    }
-    if (params.text){
-        elem.innerHTML = params.text;
-    }
-    if (params.parent){
-        params.parent.appendChild(elem);
-    }
-
-    return elem;
-}
-
 //*****************************************************
-Jgl.prototype.random = function(max){
-    return Math.floor(Math.random() * max);
-}
-
+//  STATE MANAGER - jgl_state.js
 //*****************************************************
-Jgl.prototype.randomRange = function(min, max){
-    var range = max - min + 1;
-    return (Math.floor(Math.random() * range) + min);
-}
-//*****************************************************
-Jgl.prototype.newImage = function(src, callback){
-    var image = new Image();
-    if (callback){
-        image.onload = function() { callback(image);};
-    }
-    image.src = src;
-    return image;
-}
-
-//*****************************************************
-Jgl.prototype.slowType = function(elem, str, speed, callback){
-    var len = str.length;
-    var i = 0;
-    elem.innerHTML = "";
-
-    function printChar(){
-        var ch = str.charAt(i);
-        if (ch == '~') { ch = '<br>'};
-        elem.innerHTML += ch;
-        if (++i <= len){
-            setTimeout(printChar, speed);
-        } else {
-            if (callback) {
-                callback();
-            }
-        }
-    }
-
-   printChar();
-}
+Jgl.prototype.newStateManager = function(){
+    var stateManager = new Jgl_StateManager(this);
+    this.stateList.push(stateManager);
+    return stateManager;
+};
 
 //*****************************************************
 //  WINDOW - jgl_window.js
