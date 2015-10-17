@@ -61,18 +61,18 @@ Jgl.prototype.createElement = function(params) {
     }
 
     return elem;
-}
+};
 
 //*****************************************************
 Jgl.prototype.random = function(max){
     return Math.floor(Math.random() * max);
-}
+};
 
 //*****************************************************
 Jgl.prototype.randomRange = function(min, max){
     var range = max - min + 1;
     return (Math.floor(Math.random() * range) + min);
-}
+};
 
 //*****************************************************
 Jgl.prototype.newImage = function(src, callback){
@@ -82,7 +82,7 @@ Jgl.prototype.newImage = function(src, callback){
     }
     image.src = src;
     return image;
-}
+};
 
 //*****************************************************
 Jgl.prototype.slowType = function(elem, str, speed, callback){
@@ -104,7 +104,7 @@ Jgl.prototype.slowType = function(elem, str, speed, callback){
     }
 
    printChar();
-}
+};
 
 // **********************************************************
 // document.addEventListener(type, function(event) { data is in event.detail.data); });
@@ -112,7 +112,7 @@ Jgl.prototype.postEvent = function(type, data) {
     var event = new CustomEvent(type, { detail: { data: data }} );
     event.preventDefault();
     document.dispatchEvent(event);
-}
+};
 
 // **********************************************************
 Jgl.prototype.centerElement = function(elem, orientation) {
@@ -133,55 +133,36 @@ Jgl.prototype.centerElement = function(elem, orientation) {
             elem.style.top = Math.floor((parent.clientHeight - elem.clientHeight) / 2) + 'px';
         }
     }
+};
+
+/**
+ * Load JavaScript file
+ *
+ * @public
+ * @memberof JGL.UTILS
+ * @param {string} filename The name of the file to load
+ */
+function loadjs(filename){
+    document.write("<script src='" + filename + "'></script>");
 }
 
 /**
- * Removes an element in the document
+ * Load CSS file
  *
  * @public
- * @memberof JUNOTK.SCREENUTILS
- * @param {string} _id The id of the new element. Can also be an element object.
+ * @memberof JGL.UTILS
+ * @param {string} filename The name of the file to load
+ * @param {string} id An id to attach to the element
  */
-Jgl.prototype.removeElement = function(element) {
-    var childElement = null;
-
-    if (typeof element === "string") {
-        childElement = document.getElementById(element);
+function loadcss(filename, id) {
+    var fileref;
+    fileref=document.createElement("link");
+    fileref.setAttribute("rel", "stylesheet");
+    fileref.setAttribute("type", "text/css");
+    fileref.setAttribute("href", filename);
+    if (id) {
+        fileref.setAttribute("id", id);
     }
-    else if((typeof element === "object") &&
-        ('parentNode' in element)) {
-        childElement = element;
-    }
-
-    if (childElement){
-        childElement.parentNode.removeChild(childElement);
-    }
+    document.querySelector("head").appendChild(fileref);
+    return fileref;
 }
-
-/**
- * This function will fit an image to a space (window) scaling as
- * appropriate based on the relative aspect ratios of the space and
- * image and sizes whilst retaining the aspect ratio of the image.
- *
- * @public
- * @memberof JUNOTK.SCREENUTILS
- * @param {object} imgElement the targetted <img>
- */
-Jgl.prototype.fitImageToSpace = function(imgElement) {
-    // aspect ratios
-    var windowAR = imgElement.width / imgElement.height;
-    var imageAR = imgElement.naturalWidth / imgElement.naturalHeight;
-    var scaleFactor;
-
-    if (windowAR - imageAR > 0) {
-        // all available width - scale height
-        scaleFactor = imgElement.width / imgElement.naturalWidth;
-        imgElement.height = imgElement.naturalHeight * scaleFactor;
-    }
-    else {
-        // all available height scale width
-        scaleFactor = imgElement.height / imgElement.naturalHeight;
-        imgElement.width = imgElement.naturalWidth * scaleFactor;
-    }
-}
-

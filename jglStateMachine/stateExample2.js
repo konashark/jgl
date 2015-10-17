@@ -58,4 +58,4 @@ window.onload = function() {
             }
         }
     }.bind(this);
-}
+};

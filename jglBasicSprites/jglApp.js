@@ -44,7 +44,7 @@ initSprites = function() {
 
     // Add a bunch of image sprites
     for (i = 0; i < g.NUM_SPRITES; i++) {
-        var s = spriteList.newSprite({id: 'ball'+i, width: 32, height: 32, imageUrl: './redball32x32.png'});
+        var s = spriteList.newSprite({id: 'ball'+i, width: 32, height: 32, image: './redball32x32.png'});
         s.setPosition(jgl.random(g.SCREEN_WIDTH - 40) + 20, jgl.random(g.SCREEN_HEIGHT - 60) + 30);
         s.setHotSpot(16, 16);
         s.user.dx = jgl.random(8) - 4;
@@ -53,7 +53,7 @@ initSprites = function() {
     }
 
     // Create an image sprite for our logo
-    g.logoSprite = spriteList.newSprite({id: 'logo', width: 88, height: 48, imageUrl: './jgl.png'});
+    g.logoSprite = spriteList.newSprite({id: 'logo', width: 88, height: 48, image: './jgl.png'});
     g.logoSprite.setPosition(g.SCREEN_WIDTH / 2, g.SCREEN_HEIGHT / 2);
     g.logoSprite.setHotSpot(44, 24); // make it draw centered
 

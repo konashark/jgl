@@ -49,7 +49,7 @@ window.onload = function() {
             }
         }
     }.bind(this);
-}
+};
 
 // ********************************************
 // Here's a really simple class that we will
@@ -61,7 +61,7 @@ window.onload = function() {
 // ********************************************
 var State = function(id) {
     this.id = id;
-}
+};
 
 // Inherit from JGLs abstracted State class
 State.prototype = Object.create(Jgl_State.prototype);
