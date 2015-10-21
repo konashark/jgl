@@ -69,26 +69,30 @@ Jgl_SpriteList.prototype.doIntersect = function(rect1, rect2) {
 
 //***********************************************
 Jgl_SpriteList.prototype.collision = function(sprite1, sprite2, fuzziness, circular) {
-    if (circular){
-        var xd = sprite1.x - sprite2.x;
-        var yd = sprite1.y - sprite2.y;
-        var rad = ((sprite1.width + sprite1.height) / 4) + ((sprite2.width + sprite2.height) / 4) - fuzziness;
-        return (xd * xd + yd * yd < rad * rad);
+    if (sprite1 && sprite2) {
+        if (circular){
+            var xd = sprite1.x - sprite2.x;
+            var yd = sprite1.y - sprite2.y;
+            var rad = ((sprite1.width + sprite1.height) / 4) + ((sprite2.width + sprite2.height) / 4) - fuzziness;
+            return (xd * xd + yd * yd < rad * rad);
+        } else {
+            // do rectangular collision
+            var rect1 = {
+                x1: sprite1.x - sprite1.offsetX + fuzziness,
+                y1: sprite1.y - sprite1.offsetY + fuzziness,
+                x2: sprite1.x - sprite1.offsetX + sprite1.width - fuzziness,
+                y2: sprite1.y - sprite1.offsetY + sprite1.height - fuzziness
+            };
+            var rect2 = {
+                x1: sprite2.x - sprite2.offsetX + fuzziness,
+                y1: sprite2.y - sprite2.offsetY + fuzziness,
+                x2: sprite2.x - sprite2.offsetX + sprite2.width - fuzziness,
+                y2: sprite2.y - sprite2.offsetY + sprite2.height - fuzziness
+            };
+            return this.doIntersect(rect1, rect2);
+        }
     } else {
-        // do rectangular collision
-        var rect1 = {
-            x1: sprite1.x - sprite1.offsetX + fuzziness,
-            y1: sprite1.y - sprite1.offsetY + fuzziness,
-            x2: sprite1.x - sprite1.offsetX + sprite1.width - fuzziness,
-            y2: sprite1.y - sprite1.offsetY + sprite1.height - fuzziness
-        };
-        var rect2 = {
-            x1: sprite2.x - sprite2.offsetX + fuzziness,
-            y1: sprite2.y - sprite2.offsetY + fuzziness,
-            x2: sprite2.x - sprite2.offsetX + sprite2.width - fuzziness,
-            y2: sprite2.y - sprite2.offsetY + sprite2.height - fuzziness
-        };
-        return this.doIntersect(rect1, rect2);
+        false;
     }
 };
 
@@ -133,8 +137,7 @@ Jgl_Sprite = function(jgl, params){
     this.srcX = this.srcY = 0;
     this.srcWidth = this.destWidth = params.width;
     this.srcHeight = this.destHeight = params.height;
-    this.rotation = 0;
-    this.radians = 0;
+    this.rotationRadians = 0;
     this.animFrames = [];
     this.animate = false;
     this.animationSpeed = 1;
@@ -194,9 +197,15 @@ Jgl_Sprite.prototype.draw = function(ctx, x, y) {
         if (this.active) {
             var frame = this.animFrames[this.currentFrame];
 
-            if (this.rotation) {
-                frame.context.save();
-                frame.context.rotate(this.radians);
+            var finalX =  this.x - this.offsetX + relativeX;
+            var finalY =  this.y - this.offsetY + relativeY;
+
+            if (this.rotationRadians) {
+                ctx.save();
+                ctx.translate(finalX + parseInt(frame.srcWidth / 2), finalY + parseInt(frame.srcHeight / 2));
+                finalX = -parseInt(frame.srcWidth / 2);
+                finalY = -parseInt(frame.srcHeight / 2);
+                ctx.rotate(this.rotationRadians);
             }
 
             ctx.drawImage(
@@ -205,19 +214,22 @@ Jgl_Sprite.prototype.draw = function(ctx, x, y) {
                 frame.srcY,
                 frame.srcWidth,
                 frame.srcHeight,
-                this.x - this.offsetX + relativeX,
-                this.y - this.offsetY + relativeY,
+                finalX,
+                finalY,
                 this.destWidth,
                 this.destHeight
             );
 
-            if (this.rotation) {
-                frame.context.restore();
+            if (this.rotationRadians) {
+                ctx.restore();
             }
 
             if (this.animate) {
                 if (++this.animationSpeedCounter >= this.animationSpeed) {
                     this.animationSpeedCounter = 0;
+                    if (frame.callback) {
+                        frame.callback();
+                    }
                     if (++this.currentFrame > this.endFrame) {
                         if (this.autoLoop) {
                             this.currentFrame = this.startFrame;
@@ -261,9 +273,7 @@ Jgl_Sprite.prototype.setSize = function(width, height) {
 
 //***********************************************
 Jgl_Sprite.prototype.setRotation = function(rotation) {
-    this.rotation = rotation;
-    this.radians = rotation*Math.PI/180;
-
+    this.rotationRadians = rotation*Math.PI/180;
 };
 
 //***********************************************
@@ -281,7 +291,7 @@ Jgl_Sprite.prototype.setPosition = function(x, y) {
 };
 
 //***********************************************
-Jgl_Sprite.prototype.setAnimFrame = function(frame, image, srcX, srcY, srcWidth, srcHeight) {
+Jgl_Sprite.prototype.setAnimFrame = function(frame, image, srcX, srcY, srcWidth, srcHeight, callback) {
     if (typeof(image) == "string") {
         var url = image;
         image = new Image();
@@ -291,8 +301,15 @@ Jgl_Sprite.prototype.setAnimFrame = function(frame, image, srcX, srcY, srcWidth,
     this.animFrames[frame] = { canvas: image,
         srcX: srcX, srcY: srcY,
         srcWidth: srcWidth, srcHeight: srcHeight,
-       // context: image.getContext("2d")
+        callback: callback
     };
+};
+
+//***********************************************
+Jgl_Sprite.prototype.setAnimFrameCallback = function(frame, callback) {
+    if ( frame >= 0 && frame < this.animFrames.length) {
+        this.animFrames[frame].callback = callback;
+    }
 };
 
 //***********************************************
