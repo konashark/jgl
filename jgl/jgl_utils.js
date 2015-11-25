@@ -2,6 +2,8 @@
 //  The master JGL class
 //*****************************************************
 
+var CONVERT_TO_RADIAN = Math.PI/180;
+
 // Utility function to create basic, empty DOM elements on demand
 // *****************************************************
 Jgl.prototype.requestAnimFrame = (function(callback){
@@ -82,6 +84,70 @@ Jgl.prototype.newImage = function(src, callback){
     }
     image.src = src;
     return image;
+};
+
+//*****************************************************
+Jgl.prototype.drawImage = function(context, image, x, y, params){
+
+    if (!params) {
+        context.drawImage(image, x, y);
+        return;
+    }
+
+    // Params:
+    //  scale: float
+    //  scaleX: float
+    //  scaleY: float
+    //  center: boolean
+    //  rotation: float
+    //  opacity: float
+
+    var width = image.width;
+    var height = image.height;
+
+    if (params.scale) {
+        width = width * params.scale;
+        height = height * params.scale;
+    } else {
+        if (params.scaleX) {
+            width = width * params.scaleX;
+        }
+
+        if (params.scaleY) {
+            height = height * params.scaleY;
+        }
+    }
+
+    if (params.center) {
+        x = x - parseInt(width / 2);
+        y = y - parseInt(height / 2);
+    }
+
+    context.save();
+
+    if (params.hasOwnProperty('rotation')) {
+        if (params.center){
+            context.translate(x + parseInt(width / 2), y + parseInt(height / 2));
+            x = - parseInt(width / 2);
+            y = - parseInt(height / 2);
+        } else {
+            context.translate(x, y);
+            x = y = 0;
+        }
+        context.rotate(params.rotation * CONVERT_TO_RADIAN);
+    }
+
+    if (params.hasOwnProperty('opacity')) {
+        context.globalAlpha = params.opacity;
+    }
+
+    context.drawImage(
+        image,
+        0, 0, image.width, image.height,
+        x, y, width, height
+    );
+
+    context.restore();
 };
 
 //*****************************************************
