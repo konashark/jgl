@@ -70,24 +70,28 @@ Jgl_SpriteList.prototype.doIntersect = function(rect1, rect2) {
 //***********************************************
 Jgl_SpriteList.prototype.collision = function(sprite1, sprite2, fuzziness, circular) {
     if (sprite1 && sprite2) {
+        if (!sprite1.active || !sprite2.active) {
+            return false;
+        }
+
         if (circular){
-            var xd = sprite1.x - sprite2.x;
-            var yd = sprite1.y - sprite2.y;
-            var rad = ((sprite1.width + sprite1.height) / 4) + ((sprite2.width + sprite2.height) / 4) - fuzziness;
+            var xd = sprite1.collisionRect.x - sprite2.collisionRect.x;
+            var yd = sprite1.collisionRect.y - sprite2.collisionRect.y;
+            var rad = ((sprite1.collisionRect.w + sprite1.collisionRect.h) / 4) + ((sprite2.collisionRect.w + sprite2.collisionRect.h) / 4) - fuzziness;
             return (xd * xd + yd * yd < rad * rad);
         } else {
             // do rectangular collision
             var rect1 = {
-                x1: sprite1.x - sprite1.offsetX + fuzziness,
-                y1: sprite1.y - sprite1.offsetY + fuzziness,
-                x2: sprite1.x - sprite1.offsetX + sprite1.width - fuzziness,
-                y2: sprite1.y - sprite1.offsetY + sprite1.height - fuzziness
+                x1: sprite1.collisionRect.x - sprite1.offsetX + fuzziness,
+                y1: sprite1.collisionRect.y - sprite1.offsetY + fuzziness,
+                x2: sprite1.collisionRect.x - sprite1.offsetX + sprite1.collisionRect.w - fuzziness,
+                y2: sprite1.collisionRect.y - sprite1.offsetY + sprite1.collisionRect.h - fuzziness
             };
             var rect2 = {
-                x1: sprite2.x - sprite2.offsetX + fuzziness,
-                y1: sprite2.y - sprite2.offsetY + fuzziness,
-                x2: sprite2.x - sprite2.offsetX + sprite2.width - fuzziness,
-                y2: sprite2.y - sprite2.offsetY + sprite2.height - fuzziness
+                x1: sprite2.collisionRect.x - sprite2.offsetX + fuzziness,
+                y1: sprite2.collisionRect.y - sprite2.offsetY + fuzziness,
+                x2: sprite2.collisionRect.x - sprite2.offsetX + sprite2.collisionRect.w - fuzziness,
+                y2: sprite2.collisionRect.y - sprite2.offsetY + sprite2.collisionRect.h - fuzziness
             };
             return this.doIntersect(rect1, rect2);
         }
@@ -130,6 +134,8 @@ Jgl_Sprite = function(jgl, params){
     this.user = {}; // opaque place to store user data
     this.x = 0;
     this.y = 0;
+    this.collisionRect = {};
+    this.center = false;
     this.children = []; // can attach sprites as children of other sprites in order to keep them grouped
     this.parent = null;
     this.relativePositioning = false;
@@ -187,6 +193,28 @@ Jgl_Sprite.prototype.draw = function(ctx, x, y) {
             this.y = y;
         }
 
+        var x = this.x;
+        var y = this.y;
+        var width = this.destWidth;
+        var height = this.destHeight;
+
+        if (this.scale) {
+            width = width * this.scale;
+            height = height * this.scale;
+        } else {
+            if (this.scaleX) {
+                width = width * this.scaleX;
+            }
+            if (this.scaleY) {
+                height = height * this.scaleY;
+            }
+        }
+
+        if (this.center) {
+            x = x - parseInt(width / 2);
+            y = y - parseInt(height / 2);
+        }
+
         // A child sprite can optionally be positioned relative to its parent
         var relativeX = relativeY = 0;
         if (this.relativePositioning && this.parent) {
@@ -197,8 +225,11 @@ Jgl_Sprite.prototype.draw = function(ctx, x, y) {
         if (this.active) {
             var frame = this.animFrames[this.currentFrame];
 
-            var finalX =  this.x - this.offsetX + relativeX;
-            var finalY =  this.y - this.offsetY + relativeY;
+            var finalX =  x - this.offsetX + relativeX;
+            var finalY =  y - this.offsetY + relativeY;
+
+            // Use this post-calculated rect for doing collision detection
+            this.collisionRect = { x: finalX, y: finalY, w: width, h: height };
 
             if (this.rotationRadians) {
                 ctx.save();
@@ -216,8 +247,8 @@ Jgl_Sprite.prototype.draw = function(ctx, x, y) {
                 frame.srcHeight,
                 finalX,
                 finalY,
-                this.destWidth,
-                this.destHeight
+                width,
+                height
             );
 
             if (this.rotationRadians) {
