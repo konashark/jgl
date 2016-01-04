@@ -38,7 +38,8 @@ Jgl_SpriteList.prototype.deleteAll = function() {
 //***********************************************
 Jgl_SpriteList.prototype.drawSprites = function(ctx) {
     if (!ctx){
-        return this.jgl.error.INVALID_CONTEXT;
+        console.log("Invalid context");
+        return null;
     }
 
     renderArray(this.sprites);
