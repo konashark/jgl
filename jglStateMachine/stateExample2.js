@@ -1,5 +1,5 @@
 /*
-This is a simple example of using the Juno Tool Kit State Machine and Event Manager.
+This is a simple example of using the JGL State Machine and Event Manager.
 It creates three states and rotates between them when the user presses ENTER.
 This version is more 'procedural' - every handler simply specifies a function instead of a class.
 */
@@ -36,7 +36,7 @@ window.onload = function() {
 
     stateManager.transitionTo(states[stateIndex]);
 
-    // Start handling key events - converting system UI events into Juno App Events
+    // Start handling key events
     document.onkeydown = function(event) {
         var eventConsumed = false;
         event.preventDefault();
