@@ -1,3 +1,56 @@
+// Router Object
+// *****************************************************
+var Jgl_Router = function(stateMgr) {
+
+    this.stateMgr = stateMgr;
+
+    function getUrlVars() {
+        var vars = {};
+        window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+            function(m,key,value) {
+                vars[key] = value;
+            });
+        return vars;
+    }
+
+    this.urlVars = getUrlVars();
+};
+
+// *****************************************************
+Jgl_Router.prototype.getUrlVars = function(varMask) {
+    if (varMask) {
+        return this.urlVars[varMask];
+    } else {
+        return this.urlVars;
+    }
+};
+
+// *****************************************************
+Jgl_Router.prototype.init = function(defaultRoute) {
+    var urlRoute = location.hash;
+    if (urlRoute && urlRoute.length) {
+        stateManager.router.routeTo(urlRoute);
+    } else {
+        stateManager.router.routeTo(defaultRoute);
+    }
+};
+
+// *****************************************************
+Jgl_Router.prototype.setRoute = function(route) {
+    location.hash = route;
+};
+
+// *****************************************************
+Jgl_Router.prototype.routeTo = function(route) {
+    var router = this;
+    this.stateMgr.stateList.forEach(function(state, index) {
+        if (state.route === route || state.route == route.substr(1)) {
+            router.stateMgr.transitionTo(state);
+            router.setRoute(route);
+        }
+    });
+};
+
 // State Manager Object
 // *****************************************************
 var Jgl_StateManager = function(jgl) {
@@ -7,32 +60,30 @@ var Jgl_StateManager = function(jgl) {
     this.currentState = null;
     this.historyStack = [];
     this.MAX_HISTORIES = 16;
+    this.router = new Jgl_Router(this);
 };
 
 //*****************************************************
-var Jgl_State = function(id, enter, exit, eventHandler){
+var Jgl_State = function(params){
     // params:
     //      eventHandler    - eventHandler for state
     //      enter           - callback function
     //      exit            - callback function
 
-    this.id             = id;
-    this.enter          = enter;
-    this.exit           = exit;
-    this.eventHandler   = eventHandler;
-
-    this.enter          = enter || function() { console.log("'enter' not implemented")};
-    this.exit           = exit || function() { console.log("'exit' not implemented")};
-    this.eventHandler   = eventHandler || function() { return false };
+    this.route          = params.route;
+    this.id             = params.id;
+    this.enter          = params.enter || function() { console.log("'enter' not implemented")};
+    this.exit           = params.exit || function() { console.log("'exit' not implemented")};
+    this.eventHandler   = params.eventHandler || function() { return false };
 };
 
 //*****************************************************
-Jgl_StateManager.prototype.newState = function(id, enter, exit, eventHandler){
-    if (!(id)) {
+Jgl_StateManager.prototype.newState = function(params){
+    if (!(params && params.id)) {
         return this.jgl.error.PARAMETER;
     }
 
-    return this.registerState(new Jgl_State(id, enter, exit, eventHandler));
+    return this.registerState(new Jgl_State(params));
 };
 
 //*****************************************************
@@ -106,6 +157,10 @@ Jgl_StateManager.prototype.privateDoTransition = function(oldState, newState, st
     // Tell new state that it's being activated
     if (newState.enter) {
         newState.enter(this.currentState, newState, stateData);
+    }
+
+    if (newState.route) {
+        this.router.setRoute(newState.route);
     }
     this.currentState = newState;
     console.log("JGL CURRENT STATE: " + newState.id);

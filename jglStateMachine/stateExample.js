@@ -22,11 +22,11 @@ window.onload = function() {
     // Register three states
     // Note: since we are defining our own State class, we must register each instance.
     // If we were doing this procedurally (calling stateManager.newState) registration would already be done for us
-    states[0] = stateManager.registerState(new State("stateA"));
-    states[1] = stateManager.registerState(new State("stateB"));
-    states[2] = stateManager.registerState(new State("stateC"));
+    states[0] = stateManager.registerState(new State({id: "stateA", route: "red"}));
+    states[1] = stateManager.registerState(new State({id: "stateB", route: "green"}));
+    states[2] = stateManager.registerState(new State({id: "stateC", route: "blue"}));
 
-    stateManager.transitionTo("stateA");
+    stateManager.router.init('red');    // This will use the route in the URL if present, otherwise it uses the route passed in
 
     // Start handling key events - converting system UI events into Juno App Events
     document.onkeydown = function(event) {
@@ -59,8 +59,9 @@ window.onload = function() {
 // want as long as it stores its id and provides
 // the necessary function interfaces.
 // ********************************************
-var State = function(id) {
-    this.id = id;
+var State = function(params) {
+    this.id = params.id;
+    this.route = params.route;
 };
 
 // Inherit from JGLs abstracted State class

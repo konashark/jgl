@@ -17,22 +17,24 @@ window.onload = function() {
     // Create the state machine and initialise it to a given state
     stateManager = jgl.newStateManager();
     // Populate an array of three states
-    states[0] = stateManager.newState("stateA",
-        function() {console.log("ENTER A"); },
-        function() {console.log("EXIT A"); },
-        function() {console.log("EVENTHANDLER A");
-                    return false });
-    states[1] = stateManager.newState("stateB",
-        function() {console.log("ENTER B"); },
-        function() {console.log("EXIT B"); },
-        function() {console.log("EVENTHANDLER B");
-            return false });
-
-    states[2] = stateManager.newState("stateC",
-        function() {console.log("ENTER C"); },
-        function() {console.log("EXIT C"); },
-        function() {console.log("EVENTHANDLER C");
-            return false });
+    states[0] = stateManager.newState({
+        id: "stateA",
+        enter: function() { document.write("ENTER A<br>");},
+        exit: function() { document.write("EXIT A<br>");},
+        eventHandler: function() { document.write("EVENTHANDLER A<br>"); return false; }
+    });
+    states[1] = stateManager.newState({
+        id: "stateB",
+        enter: function() { document.write("ENTER B<br>");},
+        exit: function() { document.write("EXIT B<br>");},
+        eventHandler: function() { document.write("EVENTHANDLER B<br>"); return false; }
+    });
+    states[2] = stateManager.newState({
+        id: "stateC",
+        enter: function() { document.write("ENTER C<br>");},
+        exit: function() { document.write("EXIT C<br>");},
+        eventHandler: function() { document.write("EVENTHANDLER C<br>"); return false; }
+    });
 
     stateManager.transitionTo(states[stateIndex]);
 
