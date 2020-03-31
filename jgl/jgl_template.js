@@ -8,14 +8,14 @@ var JGL_TEMPLATE = {};
     </script>
 */
     // ***********************************
-    var renderHtmlTemplate = function (template, data, target, replace) {
+    this.renderHtmlTemplate = function (template, data, target, replace) {
         var html = $(template).html();
-        html = buildTemplate(html, data);
+        html = this.buildTemplate(html, data);
         insertIntoDom(html, target, replace);
     };
     // ***********************************
-    var renderTemplateFromString = function (html, data, target, replace) {
-        html = buildTemplate(html, data);
+    this.renderTemplateFromString = function (html, data, target, replace) {
+        html = this.buildTemplate(html, data);
         insertIntoDom(html, target, replace);
     };
     // ***********************************
@@ -27,7 +27,7 @@ var JGL_TEMPLATE = {};
         }
     };
     // ***********************************
-    var buildTemplate = function (html, data) {
+    this.buildTemplate = function (html, data) {
         // Loop through data object and replace any tags that have the same names as the object fields
         for (var key in data) {
             html = html.replace(new RegExp('{{'+key+'}}','g'), data[key]);

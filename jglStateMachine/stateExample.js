@@ -26,7 +26,9 @@ window.onload = function() {
     states[1] = stateManager.registerState(new State({id: "stateB", route: "green"}));
     states[2] = stateManager.registerState(new State({id: "stateC", route: "blue"}));
 
+    // You can either switch focus at the State level or the Router level, but you should not mix both ways of doing it.
     stateManager.router.init('red');    // This will use the route in the URL if present, otherwise it uses the route passed in
+    //stateManager.transitionTo(states[0], false);
 
     // Start handling key events - converting system UI events into Juno App Events
     document.onkeydown = function(event) {
@@ -41,7 +43,9 @@ window.onload = function() {
             switch (event.keyCode) {
                 case jgl.KEYS.ENTER:
                     stateIndex = ((++stateIndex) % 3);  // look up next state and transition to it
-                    stateManager.transitionTo(states[stateIndex], false);
+                    // You can either switch focus at the State level or the Router level, but you should not mix both ways of doing it.
+                    stateManager.router.routeTo(states[stateIndex].route, false);
+                    //stateManager.transitionTo(states[stateIndex], false);
                     break;
                 case jgl.KEYS.ESC:
                     stateManager.transitionBack();

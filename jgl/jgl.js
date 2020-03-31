@@ -7,6 +7,7 @@ var Jgl = function(){
     this.mapList    = [];
     this.spriteList = [];
     this.stateList  = [];
+    self = this;
 
     this.KEYS = {
         LEFT:       37,
@@ -16,8 +17,19 @@ var Jgl = function(){
         ENTER:      13,
         BACK:       27,
         SPACE:      32,
-        ESC:        27
+        ESC:        27,
+        FORWARD_SLASH:   191,
+        BACKWARD_SLASH: 220,
     };
+
+    this.KEY_STATE = [];
+    document.addEventListener("keydown", function (ev) {
+        //console.log("KEY: ", ev.keyCode);
+        self.KEY_STATE[ev.keyCode] = true;
+    });
+    document.addEventListener("keyup", function (ev) {
+        self.KEY_STATE[ev.keyCode] = false;
+    });
 };
 
 Jgl.prototype.className = "jglGameLibrary";
@@ -161,6 +173,25 @@ Jgl.prototype.randomRange = function(min, max){
     var range = max - min + 1;
     return (Math.floor(Math.random() * range) + min);
 };
+
+//*****************************************************
+// Converts image to canvas; returns new canvas element
+Jgl.prototype.convertImageToCanvas = function(image) {
+    var canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    canvas.getContext("2d").drawImage(image, 0, 0);
+
+    return canvas;
+}
+
+//*****************************************************
+// Converts canvas to an image
+Jgl.prototype.convertCanvasToImage = function(canvas) {
+    var image = new Image();
+    image.src = canvas.toDataURL("image/png");
+    return image;
+}
 
 //*****************************************************
 Jgl.prototype.newImage = function(src, callback){

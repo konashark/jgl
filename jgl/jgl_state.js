@@ -1,8 +1,10 @@
 // Router Object
 // *****************************************************
+
 var Jgl_Router = function(stateMgr) {
 
     this.stateMgr = stateMgr;
+    this.lastRoute = '';
 
     function getUrlVars() {
         var vars = {};
@@ -27,28 +29,45 @@ Jgl_Router.prototype.getUrlVars = function(varMask) {
 
 // *****************************************************
 Jgl_Router.prototype.init = function(defaultRoute) {
+    var router = this;
+    var urlRoute = undefined;
+
+    window.onhashchange = function() {
+        console.log ("Route changed...");
+        var route;
+        var urlRoute = location.hash;
+        if (urlRoute && urlRoute.length) {
+            route = urlRoute;
+        } else {
+            route = router.defaultRoute;
+        }
+
+        doRouteStateTransition(route);
+    };
+
+    doRouteStateTransition = function(route) {
+        // Look up State object by route and activate that State
+        router.stateMgr.stateList.forEach(function(state, index) {
+            if (state.route === route || state.route == route.substr(1)) {
+                router.stateMgr.transitionTo(state);
+            }
+        });
+    }
+
     var urlRoute = location.hash;
     if (urlRoute && urlRoute.length) {
-        stateManager.router.routeTo(urlRoute);
+        router.routeTo(urlRoute);
+        doRouteStateTransition(urlRoute);
     } else {
-        stateManager.router.routeTo(defaultRoute);
+        console.log("Setting default route to " + defaultRoute);
+        router.defaultRoute = defaultRoute;
+        router.routeTo(defaultRoute);
     }
 };
 
 // *****************************************************
-Jgl_Router.prototype.setRoute = function(route) {
-    location.hash = route;
-};
-
-// *****************************************************
 Jgl_Router.prototype.routeTo = function(route) {
-    var router = this;
-    this.stateMgr.stateList.forEach(function(state, index) {
-        if (state.route === route || state.route == route.substr(1)) {
-            router.stateMgr.transitionTo(state);
-            router.setRoute(route);
-        }
-    });
+    location.hash = route;  // The 'onhashchange' listener will take it from here...
 };
 
 // State Manager Object
@@ -159,9 +178,9 @@ Jgl_StateManager.prototype.privateDoTransition = function(oldState, newState, st
         newState.enter(this.currentState, newState, stateData);
     }
 
-    if (newState.route) {
-        this.router.setRoute(newState.route);
-    }
+//    if (newState.route) {
+//        this.router.setRoute(newState.route);
+//    }
     this.currentState = newState;
     console.log("JGL CURRENT STATE: " + newState.id);
     this.jgl.postEvent(this.jgl.event.STATE_ACTIVATE, { id: newState.id, stateData: stateData });
