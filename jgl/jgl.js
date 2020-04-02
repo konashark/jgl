@@ -10,16 +10,68 @@ var Jgl = function(){
     self = this;
 
     this.KEYS = {
-        LEFT:       37,
-        RIGHT:      39,
-        UP:         38,
-        DOWN:       40,
+        DELETE:     8,
+        TAB:        9,
         ENTER:      13,
+        SHIFT:      16,
+        CTRL:       17,
+        OPTION:     18,
         BACK:       27,
-        SPACE:      32,
         ESC:        27,
-        FORWARD_SLASH:   191,
-        BACKWARD_SLASH: 220,
+        SPACE:      32,
+        LEFT:       37,
+        UP:         38,
+        RIGHT:      39,
+        DOWN:       40,
+        N0:         48,
+        N1:         49,
+        N2:         50,
+        N3:         51,
+        N4:         52,
+        N5:         53,
+        N6:         54,
+        N7:         55,
+        N8:         56,
+        N9:         57,
+        A:          65,
+        B:          66,
+        C:          67,
+        D:          68,
+        E:          69,
+        F:          70,
+        G:          71,
+        H:          72,
+        I:          73,
+        J:          74,
+        K:          75,
+        L:          76,
+        M:          77,
+        N:          78,
+        O:          79,
+        P:          80,
+        Q:          81,
+        R:          82,
+        S:          83,
+        T:          84,
+        U:          85,
+        V:          86,
+        W:          87,
+        X:          88,
+        Y:          89,
+        Z:          90,
+        LEFTCMD:    91,
+        RIGHTCMD:   93,
+        SEMICOL:    186,
+        EQUAL:      187,
+        COMMA:      188,
+        DASH:       189,
+        PERIOD:     190,
+        FORWARD_SLASH:  191,
+        LEFT_APOST:     192,
+        LEFT_SQUARE:    219,
+        BACK_SLASH:     220,
+        RIGHT_SQUARE:   221,
+        APOSTROPHE:     222
     };
 
     this.KEY_STATE = [];
@@ -51,6 +103,7 @@ Jgl.prototype.event = {
 
 var CONVERT_TO_RADIAN = Math.PI/180;
 
+//*****************************************************
 // Utility function to create basic, empty DOM elements on demand
 // *****************************************************
 window.requestAnimFrame = (function(callback){
@@ -183,7 +236,7 @@ Jgl.prototype.convertImageToCanvas = function(image) {
     canvas.getContext("2d").drawImage(image, 0, 0);
 
     return canvas;
-}
+};
 
 //*****************************************************
 // Converts canvas to an image
@@ -275,7 +328,7 @@ Jgl.prototype.slowType = function(elem, str, speed, callback){
 
     function printChar(){
         var ch = str.charAt(i);
-        if (ch == '~') { ch = '<br>'};
+        if (ch == '~') { ch = '<br>'}
         elem.innerHTML += ch;
         if (++i <= len){
             setTimeout(printChar, speed);
@@ -299,19 +352,21 @@ Jgl.prototype.postEvent = function(type, data) {
 
 // **********************************************************
 Jgl.prototype.centerElement = function(elem, orientation) {
+    var parent;
+
     if (typeof elem === "string"){
         elem = document.getElementById(elem);
     }
 
     if (orientation === undefined || orientation === 'horizontal' || orientation === 'both') {
-        var parent = elem.parentNode;
+        parent = elem.parentNode;
         if (parent){
             elem.style.left = Math.floor((parent.clientWidth - elem.clientWidth) / 2) + 'px';
         }
     }
 
     if (orientation === 'vertical' || orientation === 'both') {
-        var parent = elem.parentNode;
+        parent = elem.parentNode;
         if (parent){
             elem.style.top = Math.floor((parent.clientHeight - elem.clientHeight) / 2) + 'px';
         }
