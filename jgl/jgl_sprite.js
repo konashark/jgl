@@ -294,6 +294,9 @@ Jgl_Sprite.prototype.show = function() {
 
 //***********************************************
 Jgl_Sprite.prototype.hide = function() {
+    // Invalidate collision rect for an edge case where if a sprite is REactivated and a collision check is done
+    // PRIOR to redrawing it (where the rect gets set) the stale rect will be used and could return false results.
+    this.collisionRect = { x: 1e10, y: 1e10, w: 0, h: 0 };
     this.active = false;
 };
 
