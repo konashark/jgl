@@ -76,10 +76,12 @@ Jgl_SpriteList.prototype.collision = function(sprite1, sprite2, fuzziness, circu
         }
 
         if (circular){
-            var xd = sprite1.collisionRect.x - sprite2.collisionRect.x;
-            var yd = sprite1.collisionRect.y - sprite2.collisionRect.y;
+            // Since circular detection implies distance from centers, center the collision rects
+            var xd = ((sprite1.collisionRect.x + (sprite1.collisionRect.w / 2))  - (sprite2.collisionRect.x  + (sprite2.collisionRect.w / 2)));
+            var yd = ((sprite1.collisionRect.y + (sprite1.collisionRect.h / 2))  - (sprite2.collisionRect.y  + (sprite2.collisionRect.h / 2)));
             var rad = ((sprite1.collisionRect.w + sprite1.collisionRect.h) / 4) + ((sprite2.collisionRect.w + sprite2.collisionRect.h) / 4) - fuzziness;
             return (xd * xd + yd * yd < rad * rad);
+
         } else {
             // do rectangular collision
             var rect1 = {
