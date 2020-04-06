@@ -227,6 +227,37 @@ Jgl.prototype.randomRange = function(min, max){
     return (Math.floor(Math.random() * range) + min);
 };
 
+//*********************************************************
+Jgl.prototype.oneInChance = function(chance) {
+    if (0 == Math.floor(Math.random() * (chance)))
+        return true;
+    return false;
+};
+
+Jgl.prototype.DEGREE_TO_RADIAN = 180/Math.PI;
+//*********************************************************
+Jgl.prototype.distance = function(x1, y1, x2, y2) {
+    var dx = x2 - x1;
+    var dy = y1 - y2;
+    return (Math.sqrt((dx * dx) + (dy * dy)));
+};
+//*********************************************************
+Jgl.prototype.rectToPolar = function(x1, y1, x2, y2) {
+    var dx = x2 - x1;
+    var dy = y1 - y2;
+    var dist = (Math.sqrt((dx * dx) + (dy * dy)));
+    var angle = Math.round(Math.atan2(Math.abs(dy),Math.abs(dx)) * 180/Math.PI);
+
+    if (dy >= 0) {
+        angle = (dx < 0) ? 270+angle : 90-angle;
+    } else {
+        angle = (dx < 0) ? 270-angle : 90+angle;
+    }
+
+    return {angle:angle, distance:dist};
+};
+
+
 //*****************************************************
 // Converts image to canvas; returns new canvas element
 Jgl.prototype.convertImageToCanvas = function(image) {
