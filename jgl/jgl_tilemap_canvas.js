@@ -78,7 +78,7 @@ Jgl_TileMapCanvas.prototype.setPositionOffset = function(x, y) {
 }
 
 //*****************************************************
-Jgl_TileMapCanvas.prototype.drawMap = function(xoff, yoff) {
+Jgl_TileMapCanvas.prototype.drawMap = function(xoff, yoff, forceRefresh) {
 	
 	// This function is called whenever the offscreen buffer does not contain the requested position
 	function refreshBuffer(ctx, cornerstoneTileX, cornerstoneTileY) {
@@ -120,7 +120,7 @@ Jgl_TileMapCanvas.prototype.drawMap = function(xoff, yoff) {
 	// Find the cornerstone (the tile in the top left corner) of the requested map view
 	var cornerstoneTileX = (~~(xoff / this.mapData.tileWidth));  cornerstoneTileX -= (xoff < 0) ? 1 : 0;
 	var cornerstoneTileY = (~~(yoff / this.mapData.tileHeight)); cornerstoneTileY -= (yoff < 0) ? 1 : 0;
-	if ((cornerstoneTileX !== this.tileMap.cornerstoneTileX) || (cornerstoneTileY !== this.tileMap.cornerstoneTileY)){
+	if (forceRefresh || (cornerstoneTileX !== this.tileMap.cornerstoneTileX) || (cornerstoneTileY !== this.tileMap.cornerstoneTileY)){
 		refreshBuffer(this, cornerstoneTileX, cornerstoneTileY);
 	}
 
