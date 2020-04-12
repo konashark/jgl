@@ -241,6 +241,7 @@ Jgl.prototype.distance = function(x1, y1, x2, y2) {
     var dy = y1 - y2;
     return (Math.sqrt((dx * dx) + (dy * dy)));
 };
+
 //*********************************************************
 Jgl.prototype.rectToPolar = function(x1, y1, x2, y2) {
     var dx = x2 - x1;
@@ -257,6 +258,10 @@ Jgl.prototype.rectToPolar = function(x1, y1, x2, y2) {
     return {angle:angle, distance:dist};
 };
 
+//*********************************************************
+Jgl.prototype.rgbString = function(r, g, b) {
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+};
 
 //*****************************************************
 // Converts image to canvas; returns new canvas element
